@@ -5,8 +5,8 @@
 #include "naive.h"
 #include "fr.h"
 
-#define NUM_ELEMENTS 10
-#define SPARSITY 11
+#define NUM_ELEMENTS 20
+#define SPARSITY 22
 
 using namespace std;
 
