@@ -90,16 +90,12 @@ int main(){
     printMatrix(b, "B:");
     vector<vector<int>> c;
     c = booleanMatrixMultiplication(a,b);
-    cout << "Tested Correct Output -->\n";
-    for(auto i: c){
-        for(auto j: i){
-            cout << j << " ";
-        }
-        cout << "\n";
-    }
+    printMatrix(c, "Naive Serial:");
+    c = parallel_booleanMatrixMultiplication(a,b);
+    printMatrix(c, "Naive Parallel:");
     //vector<vector<int>> lut1 = calculateProducts(a);
     //printLut(lut1, "Look up table:");
-    vector<vector<int>> res(NUM_ELEMENTS, vector<int>(NUM_ELEMENTS,0));
+    //vector<vector<int>> res(NUM_ELEMENTS, vector<int>(NUM_ELEMENTS,0));
     #if 0
     /*
     Runs the lookup table on the entire matrix
@@ -117,7 +113,9 @@ int main(){
         }
     }
     #endif
-    res = fourRussians(a, b);
-    printMatrix(res, "Result:");
-    testMatrix(c, res);
+    c = fourRussians(a, b);
+    printMatrix(c, "Four Russians Serial:");
+    c = parallel_fourRussians(a,b);
+    printMatrix(c, "Four Russians Parallel:");
+    //testMatrix(c, res);
 }
