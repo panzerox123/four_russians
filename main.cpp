@@ -36,7 +36,7 @@ void printMatrix(vector<vector<int>>& m, const string str = "Output"){
         }
         cout << '\n';
     }
-    cout << '\n';
+    cout << "\n";
 }
 
 void printLut(vector<vector<int>>& m, const string str = "LUT:"){

@@ -6,6 +6,8 @@
 
 #include "fr.h"
 
+#include <omp.h>
+
 #define CLOCK 1
 
 using namespace std;
@@ -49,7 +51,7 @@ vector<vector<int>> parallel_calculateProducts(vector<vector<int>> &mat)
     vector<vector<int>> lut;
     int size = mat[0].size();
     long num_combinations = pow(2, size);
-    #pragma omp for
+    #pragma omp parallel for ordered
     for (long i = 0; i < num_combinations; i++)
     {
         vector<int> temp;
@@ -58,6 +60,7 @@ vector<vector<int>> parallel_calculateProducts(vector<vector<int>> &mat)
             temp.push_back((i & (0x01 << j)) ? 1 : 0);
         }
         vector<int> t = booleanVectorMultiplication(mat, temp);
+        #pragma omp ordered
         lut.push_back(t);
     }
     return lut;
@@ -157,36 +160,34 @@ vector<vector<int>> parallel_fourRussians(vector<vector<int>> &a, vector<vector<
     long start = clock();
     map<int, vector<vector<int>>> LUT;
     vector<int> pre_b(b.size(), 0);
-#pragma omp parallel
+// Preprocess A matrix
+#pragma omp parallel for
+    for (int I = 0; I < size; I += T)
     {
-        // Preprocess A matrix
-        #pragma omp for
-        for (int I = 0; I < size; I += T)
+        vector<vector<int>> current_matrix(T, vector<int>(a.size(), 0));
+        for (int i = 0; i < T; i++)
         {
-            vector<vector<int>> current_matrix(T, vector<int>(a.size(), 0));
-            #pragma omp for
-            for (int i = 0; i < T; i++)
+            for (int j = 0; j < a[0].size(); j++)
             {
-                for (int j = 0; j < a[0].size(); j++)
-                {
-                    current_matrix[i][j] = a[i + I][j];
-                }
+                current_matrix[i][j] = a[i + I][j];
             }
-            LUT[I / T] = parallel_calculateProducts(current_matrix);
         }
-        // Preprocess B matrix
-        #pragma omp nowait
-        #pragma omp for
-        for (int j = 0; j < b[0].size(); j++)
-        {
-            int res = 0;
-            for (int i = 0; i < b.size(); i++)
-            {
-                res = (res << 1) | b[i][j];
-            }
-            pre_b[j] = res;
-        }
+        LUT[I / T] = parallel_calculateProducts(current_matrix);
     }
+// Preprocess B matrix
+#pragma omp nowait
+#pragma omp parallel for
+    for (int j = 0; j < b[0].size(); j++)
+    {
+        // cout << omp_get_thread_num() << "/" << omp_get_num_threads() << '\n';
+        int res = 0;
+        for (int i = 0; i < b.size(); i++)
+        {
+            res = (res << 1) | b[i][j];
+        }
+        pre_b[j] = res;
+    }
+#pragma omp barrier
     long end = clock();
 #if CLOCK
     cout << "FR Preprocessing time taken: " << (double)(end - start) / CLOCKS_PER_SEC << "\n";

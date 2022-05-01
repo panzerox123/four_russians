@@ -32,13 +32,12 @@ vector<vector<int>> booleanMatrixMultiplication(vector<vector<int>>& a, vector<v
 vector<vector<int>> parallel_booleanMatrixMultiplication(vector<vector<int>>& a, vector<vector<int>>& b){
     vector<vector<int>> c;
     long start = clock();
+    omp_set_num_threads(8);
     #pragma omp for
     for (int i = 0; i < a.size(); i++) {
         vector<int> temp;
-        #pragma omp for
         for (int j = 0; j < a[i].size(); j++) {
             int res = 0;
-            #pragma omp for
             for (int k = 0; k < a[i].size(); k++) {
                 res = res || (a[i][k] && b[k][j]);
             }
