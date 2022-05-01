@@ -10,7 +10,7 @@ using namespace std;
 
 vector<vector<int>> booleanMatrixMultiplication(vector<vector<int>>& a, vector<vector<int>>& b){
     vector<vector<int>> c;
-    long start = clock();
+    double start = omp_get_wtime();
     for (int i = 0; i < a.size(); i++) {
         vector<int> temp;
         for (int j = 0; j < a[i].size(); j++) {
@@ -22,18 +22,17 @@ vector<vector<int>> booleanMatrixMultiplication(vector<vector<int>>& a, vector<v
         }
         c.push_back(temp);
     }
-    long end = clock();
+    double end = omp_get_wtime();
     #if CLOCK
-    cout << "Naive time taken: " << (double) (end-start)/CLOCKS_PER_SEC << "\n";
+    cout << "Naive time taken: " << (double) (end-start) << "\n";
     #endif
     return c;
 }
 
 vector<vector<int>> parallel_booleanMatrixMultiplication(vector<vector<int>>& a, vector<vector<int>>& b){
     vector<vector<int>> c;
-    long start = clock();
-    omp_set_num_threads(8);
-    #pragma omp for
+    double start = omp_get_wtime();
+    #pragma omp parallel for ordered
     for (int i = 0; i < a.size(); i++) {
         vector<int> temp;
         for (int j = 0; j < a[i].size(); j++) {
@@ -43,11 +42,12 @@ vector<vector<int>> parallel_booleanMatrixMultiplication(vector<vector<int>>& a,
             }
             temp.push_back(res);
         }
+        #pragma omp ordered
         c.push_back(temp);
     }
-    long end = clock();
+    double end = omp_get_wtime();
     #if CLOCK
-    cout << "Naive time taken: " << (double) (end-start)/CLOCKS_PER_SEC << "\n";
+    cout << "Naive PARALLEL time taken: " << (double) (end-start) << "\n";
     #endif
     return c;
 }

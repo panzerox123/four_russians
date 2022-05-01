@@ -70,7 +70,7 @@ vector<vector<int>> fourRussians(vector<vector<int>> &a, vector<vector<int>> &b)
 {
     int T = 5;
     int size = a.size();
-    long start = clock();
+    double start = omp_get_wtime();
     // Preprocess A matrix
     map<int, vector<vector<int>>> LUT;
     for (int I = 0; I < size; I += T)
@@ -96,9 +96,9 @@ vector<vector<int>> fourRussians(vector<vector<int>> &a, vector<vector<int>> &b)
         }
         pre_b[j] = res;
     }
-    long end = clock();
+    double end = omp_get_wtime();
 #if CLOCK
-    cout << "FR Preprocessing time taken: " << (double)(end - start) / CLOCKS_PER_SEC << "\n";
+    cout << "FR Preprocessing time taken: " << (double)(end - start) << "\n";
 #endif
 #if 0
     // Print the LUT
@@ -134,7 +134,7 @@ vector<vector<int>> fourRussians(vector<vector<int>> &a, vector<vector<int>> &b)
         }
     }
 #endif
-    start = clock();
+    start = omp_get_wtime();
     for (int j = 0; j < size; j++)
     {
         for (int i = 0; i < size / T; i++)
@@ -146,9 +146,9 @@ vector<vector<int>> fourRussians(vector<vector<int>> &a, vector<vector<int>> &b)
             }
         }
     }
-    end = clock();
+    end = omp_get_wtime();
 #if CLOCK
-    cout << "Result matrix computation time taken: " << (double)(end - start) / CLOCKS_PER_SEC << "\n";
+    cout << "Result matrix computation time taken: " << (double)(end - start) << "\n";
 #endif
     return output;
 }
@@ -157,7 +157,7 @@ vector<vector<int>> parallel_fourRussians(vector<vector<int>> &a, vector<vector<
 {
     int T = 5;
     int size = a.size();
-    long start = clock();
+    double start = omp_get_wtime();
     map<int, vector<vector<int>>> LUT;
     vector<int> pre_b(b.size(), 0);
 // Preprocess A matrix
@@ -188,9 +188,9 @@ vector<vector<int>> parallel_fourRussians(vector<vector<int>> &a, vector<vector<
         pre_b[j] = res;
     }
 #pragma omp barrier
-    long end = clock();
+    double end = omp_get_wtime();
 #if CLOCK
-    cout << "FR Preprocessing time taken: " << (double)(end - start) / CLOCKS_PER_SEC << "\n";
+    cout << "FR PARALLEL Preprocessing time taken: " << (double)(end - start) << "\n";
 #endif
 #if 0
     // Print the LUT
@@ -226,7 +226,7 @@ vector<vector<int>> parallel_fourRussians(vector<vector<int>> &a, vector<vector<
         }
     }
 #endif
-    start = clock();
+    start = omp_get_wtime();
     for (int j = 0; j < size; j++)
     {
         for (int i = 0; i < size / T; i++)
@@ -238,9 +238,9 @@ vector<vector<int>> parallel_fourRussians(vector<vector<int>> &a, vector<vector<
             }
         }
     }
-    end = clock();
+    end = omp_get_wtime();
 #if CLOCK
-    cout << "Result matrix computation time taken: " << (double)(end - start) / CLOCKS_PER_SEC << "\n";
+    cout << "Result matrix PARALLEL computation time taken: " << (double)(end - start) << "\n";
 #endif
     return output;
 }

@@ -5,8 +5,8 @@
 #include "naive.h"
 #include "fr.h"
 
-#define NUM_ELEMENTS 20
-#define SPARSITY 22
+#define NUM_ELEMENTS 1000
+#define SPARSITY 1001
 
 using namespace std;
 
@@ -86,13 +86,19 @@ vector<vector<int>> generateSparseMatrix(int n, int sparsity) {
 int main(){
     vector<vector<int>> a = generateSparseMatrix(NUM_ELEMENTS, SPARSITY);
     vector<vector<int>> b = generateSparseMatrix(NUM_ELEMENTS, SPARSITY);
-    printMatrix(a, "A:");
-    printMatrix(b, "B:");
-    vector<vector<int>> c;
+    //printMatrix(a, "A:");
+    //printMatrix(b, "B:");
+    vector<vector<int>> c(NUM_ELEMENTS, vector<int>(NUM_ELEMENTS, 0));
+    #if 1
+    // NAIVE SERIAL
     c = booleanMatrixMultiplication(a,b);
-    printMatrix(c, "Naive Serial:");
+    #endif
+    //printMatrix(c, "Naive Serial:");
+    #if 1
+    // NAIVE PARALLEL
     c = parallel_booleanMatrixMultiplication(a,b);
-    printMatrix(c, "Naive Parallel:");
+    #endif
+    //printMatrix(c, "Naive Parallel:");
     //vector<vector<int>> lut1 = calculateProducts(a);
     //printLut(lut1, "Look up table:");
     //vector<vector<int>> res(NUM_ELEMENTS, vector<int>(NUM_ELEMENTS,0));
@@ -113,9 +119,15 @@ int main(){
         }
     }
     #endif
+    #if 1
+    // FOUR RUSSIANS SERIAL
     c = fourRussians(a, b);
-    printMatrix(c, "Four Russians Serial:");
+    #endif
+    //printMatrix(c, "Four Russians Serial:");
+    #if 1
+    // FOUR RUSSIANS PARALLEL
     c = parallel_fourRussians(a,b);
-    printMatrix(c, "Four Russians Parallel:");
+    #endif
+    //printMatrix(c, "Four Russians Parallel:");
     //testMatrix(c, res);
 }
